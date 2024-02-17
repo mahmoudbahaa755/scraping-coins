@@ -7,27 +7,27 @@ from flask_lt import run_with_lt
 
 import requests
 from bs4 import BeautifulSoup
+data=[]
+import random
+
+def modify_data(data):
+    for item in data:
+        small_amount = random.uniform(-0.1, 0.1)
+        item['value'] = str(float(item['value']) + small_amount)
+    return data
 
 def scrape_currency_data(url="https://dollaregypt.com"):
-    # Send a GET request to the URL
     response = requests.get(url)
-
-    # Check if the request was successful
+    print('data before',data)
     if response.status_code == 200:
-        # Parse the HTML content
         soup = BeautifulSoup(response.content, "html.parser")
-        
-        # Find the relevant data on the webpage
         title = soup.find('select', id='currency')
-       
         options = title.find_all('option')
-
         data = []
         for option in options:
             currency_code = option['data-id']
             value = option['value']
             data.append({'data-id': currency_code, 'value': value})
-
         return data
     else:
         print("Failed to retrieve the webpage. Status code:", response.status_code)
@@ -35,19 +35,16 @@ def scrape_currency_data(url="https://dollaregypt.com"):
 
 app = Flask(__name__)
 api = Api(app)
-# run_with_lt(app)
 
 
-class ClassificationAPI(Resource):
+class GetEgyptBlackMarket(Resource):
         def get(self):
             data=scrape_currency_data()
             print(data)
             return {'data':data}
 
 
-api.add_resource(ClassificationAPI, "/get_coins_price", methods=["GET"])
+api.add_resource(GetEgyptBlackMarket, "/get_coins_price", methods=["GET"])
 
 if __name__ == "__main__":
-    # url = ngrok.connect(80,authtoken='usr_2Zm4w3LCulMqOUKcz120t3N9peK', region='us').public_url
-    # print(" ***** Tunnel URL:", url)
     app.run(debug=False, host="0.0.0.0", port=5400)

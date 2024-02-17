@@ -9,7 +9,6 @@ client = Client(api_key = "", api_secret = "")
 
 
 def get_asset_data(assets, interval, depth):
-	# columns = ['Date','Open','High','Low','Close' ,'Volume','IGNORE','Quote_Volume','Trades_Count','BUY_VOL','BUY_VOL_VAL','x']
 	columns = ['Date','Open','High','Low','Close']
 	for asset in assets:
 			klines = client.get_historical_klines(asset, interval, depth)
